@@ -1,32 +1,48 @@
-steps:
-  - name: Checkout project
-    uses: actions/checkout@v4
+name: Build Smart House India APK
 
-  - name: Set up Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
-  - name: Set up Flutter
-    uses: subosito/flutter-action@v2
-    with:
-      channel: stable
+permissions:
+  contents: read
 
-  - name: Generate Android project if missing
-    run: |
-      if [ ! -d android ]; then
-        flutter create --platforms=android .
-      fi
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
 
-  - name: Get dependencies
-    run: flutter pub get
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
 
-  - name: Build debug APK
-    run: flutter build apk --debug
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
 
-  - name: Upload APK
-    uses: actions/upload-artifact@v4
-    with:
-      name: smart-house-india-debug-apk
-      path: build/app/outputs/flutter-apk/app-debug.apk
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Generate Android files if missing
+        run: |
+          if [ ! -d android ]; then
+            flutter create --platforms=android .
+          fi
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: smart-house-india-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
