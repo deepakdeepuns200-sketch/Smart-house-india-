@@ -40,9 +40,3 @@ jobs:
 
       - name: Build APK
         run: flutter build apk --debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: smart-house-india-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
