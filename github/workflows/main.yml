@@ -1,0 +1,40 @@
+name: Build Smart House India APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Check Flutter project
+        run: |
+          if [ ! -f pubspec.yaml ]; then
+            echo "Flutter project is missing pubspec.yaml"
+            exit 1
+          fi
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smart-house-india-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
