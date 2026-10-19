@@ -29,28 +29,46 @@ jobs:
         with:
           channel: stable
 
-      name: Find Flutter project
-run: |
-echo "Searching for Flutter project files..."
-find . -name pubspec.yaml -not -path '/.dart_tool/'
-echo "Repository root:"
-ls -la
+      - name: Find Flutter project
+        run: |
+          echo "Searching for Flutter project files..."
+          find . -name pubspec.yaml -not -path '*/.dart_tool/*'
+          echo "Repository root:"
+          ls -la
+
+      - name: Locate project directory
+        run: |
+          PROJECT_DIR="$(dirname "$(find . -name pubspec.yaml -not -path '*/.dart_tool/*' -print -quit)")"
+          if [ -z "$PROJECT_DIR" ] || [ ! -f "$PROJECT_DIR/pubspec.yaml" ]; then
+            echo "ERROR: pubspec.yaml not found."
+            exit 1
+          fi
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
+
+      - name: Fix Dart package name
+        run: |
+          sed -i 's/^name:.*/name: smart_house_india/' "$PROJECT_DIR/pubspec.yaml"
 
       - name: Generate Android files if missing
         run: |
+          cd "$PROJECT_DIR"
           if [ ! -d android ]; then
             flutter create --platforms=android --project-name smart_house_india .
           fi
 
       - name: Get dependencies
-        run: flutter pub get
+        run: |
+          cd "$PROJECT_DIR"
+          flutter pub get
 
       - name: Build APK
-        run: flutter build apk --debug
+        run: |
+          cd "$PROJECT_DIR"
+          flutter build apk --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: smart-house-india-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: '**/build/app/outputs/flutter-apk/app-debug.apk'
           if-no-files-found: error
