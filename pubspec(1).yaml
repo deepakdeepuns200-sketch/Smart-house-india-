@@ -1,4 +1,4 @@
-name: Build Smart House India APK
+name: smart_house_india
 
 on:
   workflow_dispatch:
