@@ -29,9 +29,12 @@ jobs:
         with:
           channel: stable
 
-      - name: Fix Dart package name
-        run: |
-          sed -i 's/^name:.*/name: smart_house_india/' pubspec.yaml
+      name: Find Flutter project
+run: |
+echo "Searching for Flutter project files..."
+find . -name pubspec.yaml -not -path '/.dart_tool/'
+echo "Repository root:"
+ls -la
 
       - name: Generate Android files if missing
         run: |
