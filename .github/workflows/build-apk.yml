@@ -1,4 +1,4 @@
-name:name: Build Smart House India APK
+name: Build Smart House India APK
 
 on:
   workflow_dispatch:
@@ -51,59 +51,3 @@ jobs:
           name: smart-house-india-apk
           path: build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
-
-**What this fixes:**
-- Corrects the invalid Dart package name.
-- Specifies a valid name when generating Android files.
-- Uploads the completed APK as a GitHub Actions artifact.
-
-## Step 2: Fix `pubspec.yaml`
-
-Open your project's [`pubspec.yaml`](https://github.com/deepakdeepuns200-sketch/Smart-house-india-/blob/main/pubspec.yaml).
-
-Ensure the first line is:
-
-```yaml
-name: smart_house_india
- Build Smart House India APK
-
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
-permissions:
-  contents: read
-
-jobs:
-  build:
-    name: Build Android APK
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout project
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-
-      - name: Generate Android files if missing
-        run: |
-          if [ ! -d android ]; then
-            flutter create --platforms=android .
-          fi
-
-      - name: Get dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --debug
